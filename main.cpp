@@ -2,17 +2,17 @@
 
 #include <cstdio>
 
-#include "include/Curse.h"
+#include "include/World.h"
 
 int main() {
-  Curse cr;
-  char *s;
+  World cr;
+  char s[100];
   const char *d = "AAA";
-  for (int i = 0; i < 10; i++) {
+  for (int i = 0; i < 30; i++) {
     sprintf(s, "%d. twoja stara", i);
-    cr.addLog(d);
+    cr.addLog(s);
   }
-  cr.printCurse();
+  cr.printWorld();
 
   getch();
   return 0;
