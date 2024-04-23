@@ -1,0 +1,9 @@
+{
+    "makefile.launchConfigurations": [
+        {
+            "cwd": "/home/joseph/ProjektPO",
+            "binaryPath": "/home/joseph/ProjektPO/bin",
+            "binaryArgs": []
+        }
+    ]
+}

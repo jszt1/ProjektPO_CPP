@@ -5,15 +5,15 @@
 #include "include/World.h"
 
 int main() {
-  World cr;
-  char s[100];
-  const char *d = "AAA";
-  for (int i = 0; i < 30; i++) {
-    sprintf(s, "%d. twoja stara", i);
-    cr.addLog(s);
+  World* cr = World::getWorld(20, 20);
+  int i = 0;
+  while(i < 10){
+  //cr->doTheTurn();
+  //cr->printWorld();
+  napms(1000);
+  cr->doTheTurn();
+  //getch();
+  i++;
   }
-  cr.printWorld();
-
-  getch();
   return 0;
 }

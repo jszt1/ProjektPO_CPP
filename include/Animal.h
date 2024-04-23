@@ -1,9 +1,10 @@
+#pragma once
 #include "Organism.h"
 
-class Animal : Organism {
+class Animal : public Organism {
+public:
   void action() override;
-  void colision() override;
-  void draw() override;
-
-  Animal(World &);
+  void colision(Organism*) override;
+protected:
+  Animal(char, int, int, int, int);
 };
