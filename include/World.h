@@ -18,16 +18,19 @@ struct Pos{
 };
 
 class Organism;
+class Human;
 //class Wolf;
 
 class World {
   int x, y;
   int gameTurn;
+  Pos playerPos;
   std::vector<Organism*> organisms; 
   vector<string> logs;
   WINDOW *logsView;
   WINDOW *stats;
   WINDOW *gameMap;
+  Human *human;
   
   size_t logsSz;
   size_t logsPos;
@@ -43,6 +46,7 @@ class World {
 
 public:
   World(int, int);
+  bool getPlayerInput();
   void addLog(Organism*, std::string s);
   void addOrganism(Organism*);
   void killOrg(Organism*);

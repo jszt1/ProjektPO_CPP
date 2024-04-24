@@ -11,7 +11,7 @@ Plant::Plant(char orgType, int power, int x, int y, World *itsWorld) : Organism(
 void Plant::action(){
     makeOlder();
     if(getAge() > PLANT_MATURE_AGE){
-        int probOfSpreading = rand() % 10;
+        int probOfSpreading = rand() % 50;
         if(probOfSpreading == 0){
             std::vector<Pos> freePos = getFreePos();
             std::string logMsg = "";
@@ -19,8 +19,8 @@ void Plant::action(){
                 int randPos = rand() % freePos.size();
                 createChild(freePos[randPos].x, freePos[randPos].y);
                 logMsg += " zasial sie dalej.";
+                itsWorld->addLog(this, logMsg);
             }
-            itsWorld->addLog(this, logMsg);
         }   
     }
     

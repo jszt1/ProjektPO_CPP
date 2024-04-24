@@ -22,6 +22,10 @@ void Animal::action() {
   }
 }
 
+bool Animal::isAnimal(){
+  return true;
+}
+
 void Animal::createChild(int x, int y){
   itsWorld->addOrganism(getChild(x, y));
 }

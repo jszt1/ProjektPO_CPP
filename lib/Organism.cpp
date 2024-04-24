@@ -13,6 +13,10 @@ int Organism::getAge() const { return age; }
 void Organism::draw(){
   mvwaddch(itsWorld->getGameMap(), 1 + y, 1 + x, orgType);
 } 
+bool Organism::isAnimal(){
+  return false;
+}
+
 bool Organism::setXY(int x, int y, bool forcedEmpty){
   if (x < 0 || x >= itsWorld->getGameSizeX() || y < 0 ||
         y >= itsWorld->getGameSizeY()) {
@@ -42,11 +46,30 @@ void Organism::goBack(){
   setXY(prevX, prevY, false);
 }
 
+void Organism::empower(int val){
+  power += val;
+}
+
 bool Organism::canEscape(){
   return false;
 }
 
 #define MAX_POS_TO_MOVE 8
+vector<Pos> Organism::getNeighbours(){
+  std::vector<Pos> temp;
+  Pos tempPos;
+  for(int i = 0; i < MAX_POS_TO_MOVE; i++){
+    tempPos.x = getX() + i / 3 - 1;
+    tempPos.y = getY() + i % 3 - 1;
+    if(tempPos.x < itsWorld->getGameSizeX() && tempPos.x >= 0 
+    && tempPos.y < itsWorld->getGameSizeY() && tempPos.y >= 0
+    && itsWorld->getOrganismXY(tempPos.x, tempPos.y)
+    ){
+      temp.push_back(tempPos);
+    }
+  }
+  return temp;
+}
 
 std::vector<Pos> Organism::getFreePos(){
   std::vector<Pos> freePos;

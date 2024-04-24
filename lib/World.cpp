@@ -11,6 +11,10 @@
 #include "../include/Antelope.h"
 #include "../include/Grass.h"
 #include "../include/Dandelion.h"
+#include "../include/DeadlyNightshade.h"
+#include "../include/SosnowskiHogweed.h"
+#include "../include/Human.h"
+
 
 World::World(int width, int height) {
   x = width;
@@ -19,16 +23,19 @@ World::World(int width, int height) {
   logsPos = 0;
   // new Sheep(10, 10, this);
   // new Sheep(11, 12, this);
-  // new Wolf(10, 11, this);
-  // new Wolf(12, 13, this);
-  // new Wolf(12, 14, this);
+   //new Wolf(10, 11, this);
+   new Wolf(12, 17, this);
+   new Wolf(12, 16, this);
+   new Human(x/2, y/2, this);
+   //new DeadlyNightshade(11, 10, this);
   // // new Fox(14, 11, this);
   // new Fox(14, 12, this);
   //new Fox(14, 13, this);
 
-  new Dandelion(15, 15, this);
-  new Dandelion(7, 7, this);
-  new Grass(10, 10, this);
+  // new Dandelion(15, 15, this);
+  // new Dandelion(7, 7, this);
+  // new Grass(10, 10, this);
+  new SosnowskiHogweed(12, 12, this);
   // new Turtle(14, 0, this);
   // new Turtle(14, 0, this);
   // new Turtle(14, 0, this);
@@ -36,9 +43,12 @@ World::World(int width, int height) {
   // new Antelope(13, 10, this);
   // new Antelope(11, 10, this);
   // logsPos = 0;
+  playerPos.x = x / 2;
+  playerPos.y = y / 2;
   initscr();
   start_color();
-
+  noecho();
+  cbreak();
   logsView = newwin(MAX_LOGS_PER_PAGE + 2, 2 * (y + 2),
                     x + 2, 0);
   stats = newwin(y + 2, x + 2, 0, 22);
@@ -94,12 +104,33 @@ void World::printGameMap() {
   mvwprintw(gameMap, 0, 2, "MAP");
   for (int i = 0; i < organisms.size(); i++) {
     organisms[i]->draw();
-    if(organisms[i]->getType() == 'd'){
-      logs.push_back(std::to_string(organisms[i]->getX()) + std::to_string(organisms[i]->getY()));
-    }
   }
   wrefresh(gameMap);
   // pass
+}
+
+bool World::getPlayerInput(){
+  int ch;
+  ch = wgetch(logsView);
+  switch(ch){
+    case KEY_UP:
+      human->setKY(-1);
+      human->setKX(0);
+      break;
+    case KEY_DOWN:
+      human->setKY(1);
+      human->setKX(0);
+      break;
+    case KEY_LEFT:
+      human->setKY(0);
+      human->setKX(-1);
+      break;
+    case KEY_RIGHT:
+      human->setKY(0);
+      human->setKX(1);
+      break;
+  }
+  return ch;
 }
 
 void World::printStats() {
@@ -161,7 +192,7 @@ void World::clearLogs(){
 void World::addLog(Organism* org, std::string s) {
   std::string log = typeid(*org).name();
   //std::cout << typeid(log);
-  log.substr(1, log.length());
+  log.erase(0, 1);
   logs.push_back(log + s);
   //mvwprintw(logsView, logsPos + 1, 1, "%s", (log + s).c_str());
 }
