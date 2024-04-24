@@ -3,6 +3,8 @@
 #include <typeinfo>
 #include <vector>
 #include <string>
+#include <ctime>
+#include <fstream>
 #include "../include/Organism.h"
 #include "../include/Wolf.h"
 #include "../include/Sheep.h"
@@ -15,6 +17,7 @@
 #include "../include/SosnowskiHogweed.h"
 #include "../include/Human.h"
 
+using namespace std;
 
 World::World(int width, int height) {
   x = width;
@@ -23,10 +26,10 @@ World::World(int width, int height) {
   logsPos = 0;
   // new Sheep(10, 10, this);
   // new Sheep(11, 12, this);
-   //new Wolf(10, 11, this);
-   new Wolf(12, 17, this);
-   new Wolf(12, 16, this);
-   new Human(x/2, y/2, this);
+   new Wolf(10, 11, this);
+   new Wolf(12, 12, this);
+   new Wolf(12, 13, this);
+   humanPtr = new Human(x/2, y/2, this);
    //new DeadlyNightshade(11, 10, this);
   // // new Fox(14, 11, this);
   // new Fox(14, 12, this);
@@ -35,7 +38,8 @@ World::World(int width, int height) {
   // new Dandelion(15, 15, this);
   // new Dandelion(7, 7, this);
   // new Grass(10, 10, this);
-  new SosnowskiHogweed(12, 12, this);
+  //new SosnowskiHogweed(12, 12, this);
+  //new SosnowskiHogweed(14, 14, this);
   // new Turtle(14, 0, this);
   // new Turtle(14, 0, this);
   // new Turtle(14, 0, this);
@@ -48,11 +52,14 @@ World::World(int width, int height) {
   initscr();
   start_color();
   noecho();
+  curs_set(0);
   cbreak();
+  srand(time(NULL));
+  keypad(stdscr, TRUE);
   logsView = newwin(MAX_LOGS_PER_PAGE + 2, 2 * (y + 2),
                     x + 2, 0);
-  stats = newwin(y + 2, x + 2, 0, 22);
-  gameMap = newwin(22, 22, 0, 0);
+  stats = newwin(y + 2, x + 2, 0, x + 2);
+  gameMap = newwin(y + 2, x + 2, 0, 0);
 
   init_pair(1, COLOR_RED, COLOR_BLACK);
   init_pair(2, COLOR_GREEN, COLOR_BLACK);
@@ -83,6 +90,20 @@ World* World::getWorld(int width, int height){
   return world;
 }
 
+void World::saveWorld(){
+  string name = "gameSaves/save" + to_string(rand()) + ".txt";
+  ofstream save;
+  save.open(name);
+  save << "Turn: " << to_string(gameTurn) << "\nWorldSz(x,y): " 
+  + to_string(x) + to_string(y) + "\n";
+
+  for(int i =0; i < organisms.size(); i++){
+    save << organisms[i]->toString() << "\n";
+  }
+
+  save.close();
+}
+
 void World::clearWindows() {
   logsPos = 0;
   wclear(gameMap);
@@ -111,32 +132,32 @@ void World::printGameMap() {
 
 bool World::getPlayerInput(){
   int ch;
-  ch = wgetch(logsView);
-  switch(ch){
-    case KEY_UP:
-      human->setKY(-1);
-      human->setKX(0);
-      break;
-    case KEY_DOWN:
-      human->setKY(1);
-      human->setKX(0);
-      break;
-    case KEY_LEFT:
-      human->setKY(0);
-      human->setKX(-1);
-      break;
-    case KEY_RIGHT:
-      human->setKY(0);
-      human->setKX(1);
-      break;
+  ch = getch();
+  if(humanPtr->selectMove(ch)){
+    return true;
   }
-  return ch;
+  return false;;
 }
 
 void World::printStats() {
   mvwprintw(stats, 0, 2, "STATS");
   int temp = organisms.size();
   mvwprintw(stats, 1, 1, "%d", temp);
+   mvwprintw(stats, 2, 1, "TURN: %d", gameTurn);
+  mvwprintw(stats, 3, 1, "IMMORTALITY:");
+  if(humanPtr != nullptr){
+    int timer = humanPtr->getAbilityTimer();
+    if(timer > 0){
+      mvwprintw(stats, 4, 1, "ON (%d turns)", timer);
+    }
+    else if(timer < 0){
+      mvwprintw(stats, 4, 1, "COOLDOWN (%d turns)", timer);
+    }
+    else{
+      mvwprintw(stats, 4, 1, "READY TO USE");
+    }
+  }
+  
   wrefresh(stats);
   // pass
 }
@@ -173,6 +194,9 @@ void World::printWorld() {
 void World::doTheTurn(){
   clearLogs();
   gameTurn++;
+  if(gameTurn == 100){
+    saveWorld();
+  }
   std::sort(organisms.begin(), organisms.end(), Organism::priority);
   for(int i = 0; i < organisms.size(); i++){
     //printf("%d", i);

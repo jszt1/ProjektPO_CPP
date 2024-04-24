@@ -54,6 +54,12 @@ bool Organism::canEscape(){
   return false;
 }
 
+std::string Organism::toString(){
+  std::string name = typeid(*this).name();
+  name.erase(0, 1);
+  return name + " " + std::to_string(getX()) + " " + std::to_string(getY());
+}
+
 #define MAX_POS_TO_MOVE 8
 vector<Pos> Organism::getNeighbours(){
   std::vector<Pos> temp;

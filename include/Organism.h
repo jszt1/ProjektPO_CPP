@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 
 class World;
 class Pos;
@@ -35,6 +36,7 @@ public:
   bool setXY(int x, int y, bool forcedEmpty);
   static bool priority(Organism*, Organism*);
   virtual bool isAnimal();
+  std::string toString();
   void goBack();
   std::vector<Pos> getFreePos();
   std::vector<Pos> getNeighbours();

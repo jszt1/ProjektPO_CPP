@@ -8,10 +8,10 @@ class Human : public Animal{
     Organism* getChild(int x, int y);
 public:
     Human(int x, int y, World*);
-    int getKY();
-    int getKX();
-    void setKY(int);
-    void setKX(int);
-    void activateSuperPower();
+    void setKXY(int x, int y);
+    bool canEscape();
+    bool selectMove(int key);
     int getAbilityTimer();
+    void activateSuperPower();
+    void action();
 };

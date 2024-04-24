@@ -27,7 +27,7 @@ bool Animal::isAnimal(){
 }
 
 void Animal::createChild(int x, int y){
-  itsWorld->addOrganism(getChild(x, y));
+  getChild(x, y);
 }
 
 #define ORG_THIS " (" + std::to_string(getX()) + ", " + std::to_string(getY()) + ")"

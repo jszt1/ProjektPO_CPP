@@ -45,5 +45,5 @@ void Plant::colision(Organism *other){
 
 
 void Plant::createChild(int x, int y){
-    itsWorld->addOrganism(getChild(x, y));
+    getChild(x, y);
 }

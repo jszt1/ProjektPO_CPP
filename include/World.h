@@ -30,7 +30,7 @@ class World {
   WINDOW *logsView;
   WINDOW *stats;
   WINDOW *gameMap;
-  Human *human;
+  Human *humanPtr;
   
   size_t logsSz;
   size_t logsPos;
@@ -55,6 +55,7 @@ public:
   WINDOW *getLogsView();
   WINDOW *getStats();
   void printWorld();
+  void saveWorld();
   void doTheTurn();
 
   int getGameSizeX();
