@@ -1,8 +1,9 @@
 #include "Animal.h"
 
 class World;
-class Wolf : public Animal {
+class Fox : public Animal {
   Organism* getChild(int x, int y) override;
 public:
-  Wolf(int, int, World*);
+  Fox(int, int, World*);
+  void action();
 };

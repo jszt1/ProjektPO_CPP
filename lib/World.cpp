@@ -1,16 +1,41 @@
 #include "../include/World.h"
 #include <iostream>
 #include <typeinfo>
+#include <vector>
+#include <string>
+#include "../include/Organism.h"
 #include "../include/Wolf.h"
+#include "../include/Sheep.h"
+#include "../include/Fox.h"
+#include "../include/Turtle.h"
+#include "../include/Antelope.h"
+#include "../include/Grass.h"
+#include "../include/Dandelion.h"
 
 World::World(int width, int height) {
   x = width;
   y = height;
   gameTurn = 0;
   logsPos = 0;
+  // new Sheep(10, 10, this);
+  // new Sheep(11, 12, this);
+  // new Wolf(10, 11, this);
+  // new Wolf(12, 13, this);
+  // new Wolf(12, 14, this);
+  // // new Fox(14, 11, this);
+  // new Fox(14, 12, this);
+  //new Fox(14, 13, this);
 
-  addOrganism(new Wolf(10, 10));
-  logsPos = 0;
+  new Dandelion(15, 15, this);
+  new Dandelion(7, 7, this);
+  new Grass(10, 10, this);
+  // new Turtle(14, 0, this);
+  // new Turtle(14, 0, this);
+  // new Turtle(14, 0, this);
+  // new Antelope(0, 10, this);
+  // new Antelope(13, 10, this);
+  // new Antelope(11, 10, this);
+  // logsPos = 0;
   initscr();
   start_color();
 
@@ -69,6 +94,9 @@ void World::printGameMap() {
   mvwprintw(gameMap, 0, 2, "MAP");
   for (int i = 0; i < organisms.size(); i++) {
     organisms[i]->draw();
+    if(organisms[i]->getType() == 'd'){
+      logs.push_back(std::to_string(organisms[i]->getX()) + std::to_string(organisms[i]->getY()));
+    }
   }
   wrefresh(gameMap);
   // pass
@@ -76,15 +104,29 @@ void World::printGameMap() {
 
 void World::printStats() {
   mvwprintw(stats, 0, 2, "STATS");
+  int temp = organisms.size();
+  mvwprintw(stats, 1, 1, "%d", temp);
   wrefresh(stats);
   // pass
+}
+
+void World::killOrg(Organism *toBeKilled){
+  if(toBeKilled == nullptr){
+    return;
+  }
+  for(int i = 0; i < organisms.size(); i++){
+    if(organisms[i] == toBeKilled){
+      organisms.erase(organisms.begin() + i);
+      break;
+    }
+  }
 }
 
 void World::printLogs() {
   mvwprintw(logsView, 0, 2, "LOGS");
   for (int i = 0; i < logs.size(); i++) {
     //td::cout << "HAHAH";
-    mvwprintw(logsView, i + 1, 1, "%s", logs[i].c_str());
+    mvwaddstr(logsView, i + 1, 1, logs[i].c_str());
   }
   wrefresh(logsView);
 }
@@ -98,8 +140,9 @@ void World::printWorld() {
 }
 
 void World::doTheTurn(){
-  //clearLogs();
+  clearLogs();
   gameTurn++;
+  std::sort(organisms.begin(), organisms.end(), Organism::priority);
   for(int i = 0; i < organisms.size(); i++){
     //printf("%d", i);
     //printf("%s", typeid(*organisms[i]).name());
@@ -110,22 +153,21 @@ void World::doTheTurn(){
   // }
 }
 
+
 void World::clearLogs(){
-  // while(!logs.empty()){
-  //   delete logs.back();
-  //   logs.pop_back();
-  // }
+  logs.clear();
 }
 
-void World::addLog(Organism* org, std::string &s) {
+void World::addLog(Organism* org, std::string s) {
   std::string log = typeid(*org).name();
-  std::cout << log + s;
+  //std::cout << typeid(log);
+  log.substr(1, log.length());
   logs.push_back(log + s);
   //mvwprintw(logsView, logsPos + 1, 1, "%s", (log + s).c_str());
 }
 
-int World::getGameSizeX() const { return x; }
-int World::getGameSizeY() const { return y; }
+int World::getGameSizeX(){ return x; }
+int World::getGameSizeY(){ return y; }
 Organism *World::getOrganismXY(int xPos, int yPos){ 
   if(xPos < 0 || xPos >= x || yPos < 0 || yPos >= y){
     return nullptr;
@@ -142,5 +184,9 @@ Organism *World::getOrganismXY(int xPos, int yPos){
 }
 
 World::~World() {
+  for(int i = 0; i < organisms.size(); i++){
+    delete organisms.back();
+    organisms.pop_back();
+  }
   endwin();
 }

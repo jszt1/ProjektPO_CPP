@@ -2,6 +2,7 @@
 #include <ncurses.h>
 #include <string>
 #include <vector>
+#include <algorithm>
 #include "Organism.h"
 
 
@@ -11,6 +12,11 @@
 
 using namespace std;
 
+struct Pos{
+  int x;
+  int y;
+};
+
 class Organism;
 //class Wolf;
 
@@ -18,11 +24,11 @@ class World {
   int x, y;
   int gameTurn;
   std::vector<Organism*> organisms; 
-
+  vector<string> logs;
   WINDOW *logsView;
   WINDOW *stats;
   WINDOW *gameMap;
-  vector<string> logs;
+  
   size_t logsSz;
   size_t logsPos;
   static World *world;
@@ -33,23 +39,22 @@ class World {
   void clearLogs();
   void clearWindows();
   void addBorders();
-
-protected:
-  WINDOW *getGameMap();
-  WINDOW *getLogsView();
-  WINDOW *getStats();
+  
 
 public:
   World(int, int);
-  //void addLog(Organism*, const std::string&);
-  //void addLog(Organism*, const char* &);
-  void addLog(Organism*, std::string &s);
+  void addLog(Organism*, std::string s);
   void addOrganism(Organism*);
+  void killOrg(Organism*);
+  bool priority(Organism*, Organism*);
+  WINDOW *getGameMap();
+  WINDOW *getLogsView();
+  WINDOW *getStats();
   void printWorld();
   void doTheTurn();
 
-  int getGameSizeX() const;
-  int getGameSizeY() const;
+  int getGameSizeX();
+  int getGameSizeY();
   static World* getWorld();
   static World* getWorld(int, int);
   Organism *getOrganismXY(int x, int y);

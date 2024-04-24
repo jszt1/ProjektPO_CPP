@@ -4,51 +4,88 @@
 int Organism::getX() const { return x; }
 void Organism::makeOlder(){ age++; }
 int Organism::getY() const { return y; }
+int Organism::getPrevX() const { return prevX; }
+int Organism::getPrevY() const { return prevY; }
 int Organism::getPower() const { return power; }
 int Organism::getInitiative() const { return initiative; }
 char Organism::getType() const { return orgType; }
-void Organism::draw() const {
-  mvwaddch(World::getWorld()->getGameMap(), 1 + y, 1 + x, orgType);
+int Organism::getAge() const { return age; }
+void Organism::draw(){
+  mvwaddch(itsWorld->getGameMap(), 1 + y, 1 + x, orgType);
 } 
 bool Organism::setXY(int x, int y, bool forcedEmpty){
-  if (x < 0 || x >= World::getWorld()->getGameSizeX() || y < 0 ||
-        y >= World::getWorld()->getGameSizeY()) {
+  if (x < 0 || x >= itsWorld->getGameSizeX() || y < 0 ||
+        y >= itsWorld->getGameSizeY()) {
       return false;
   }
-  //Organism* other = world->getOrganismXY(x, y);
-  int lastPosX = this->x;
-  int lastPosY = this->y;
+  Organism* other = itsWorld->getOrganismXY(x, y);
+  this->prevX = this->x;
+  this->prevY = this->y;
 
-  // if(forcedEmpty && other != nullptr){
-  //   return false;
-  // }
+  if(forcedEmpty && other != nullptr){
+    return false;
+  }
 
   this->x = x;
   this->y = y;
-  // std::string moveMsg = " moved from (";
-  // moveMsg.append(std::to_string(lastPosX));
-  // moveMsg.append(",");
-  // moveMsg.append(std::to_string(lastPosY));
-  // moveMsg.append(") to (");
-  // moveMsg.append(std::to_string(this->x));
-  // moveMsg.append(", ");
-  // moveMsg.append(std::to_string(this->y));
-  // moveMsg.append(")");
-  std::string moveMsg = " moved from (" + std::to_string(lastPosX) + "," 
-                 + std::to_string(lastPosY) + ") to ("
+  std::string moveMsg = " moved from (" + std::to_string(this->prevX) + "," 
+                 + std::to_string(this->prevY) + ") to ("
                  + std::to_string(this->x) + ", " + std::to_string(this->y) + ")";
-  world->addLog(this, moveMsg);
-  // world->addLog(this, " moved from (" + std::to_string(lastPosX) + "," 
-  //               + std::to_string(lastPosY) + ") to ("
-  //               + std::to_string(this->x) + ", " + std::to_string(this->y) + ")");
-  // if(other != nullptr){
-  //   other->colision(this);
-  // }
+  this->itsWorld->addLog(this, moveMsg);
+  if(other != nullptr){
+    other->colision(this);
+  }
   return true;
 }
-Organism::Organism(char orgType, int x, int y, int power, int initiative) 
+
+void Organism::goBack(){
+  setXY(prevX, prevY, false);
+}
+
+bool Organism::canEscape(){
+  return false;
+}
+
+#define MAX_POS_TO_MOVE 8
+
+std::vector<Pos> Organism::getFreePos(){
+  std::vector<Pos> freePos;
+  Pos tempPos;
+  for(int i = 0; i < MAX_POS_TO_MOVE; i++){
+    tempPos.x = getX() + i / 3 - 1;
+    tempPos.y = getY() + i % 3 - 1;
+    if(tempPos.x < itsWorld->getGameSizeX() && tempPos.x >= 0 
+    && tempPos.y < itsWorld->getGameSizeY() && tempPos.y >= 0
+    && !itsWorld->getOrganismXY(tempPos.x, tempPos.y)
+    ){
+      freePos.push_back(tempPos);
+    }
+  }
+  return freePos;
+}
+
+bool Organism::priority(Organism* first, Organism* second){
+  if(first->initiative > second->initiative){
+    return 1;
+  }
+  else if(first-> initiative < second->initiative){
+    return 0;
+  }
+  else{
+    if(first->age > second->age){
+      return 1;
+    }
+    else{
+      return 0;
+    }
+  }
+}
+
+
+Organism::Organism(char orgType, int x, int y, int power, int initiative, World* itsWorld, int age) 
 : orgType(orgType), x(x), y(y), power(power),
       initiative(initiative) {
-        this->world = World::getWorld();
-        this->age = 0;
+        this->itsWorld = itsWorld;
+        this->age = age;
+        itsWorld->addOrganism(this);
       }

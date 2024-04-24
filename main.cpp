@@ -7,12 +7,11 @@
 int main() {
   World* cr = World::getWorld(20, 20);
   int i = 0;
-  while(i < 10){
-  //cr->doTheTurn();
-  //cr->printWorld();
-  napms(1000);
-  cr->doTheTurn();
-  //getch();
+  while(i < 1000){
+    cr->printWorld();
+    napms(100);
+    cr->doTheTurn();
+    //getch();
   i++;
   }
   return 0;
