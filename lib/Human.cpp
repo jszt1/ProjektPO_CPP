@@ -82,12 +82,15 @@ bool Human::selectMove(int key){
             }
             return true;
             break;
-        case 's':
+        case 'k':
             if(abilityTimer == 0){
                 abilityTimer = 5;
             }
             setKXY(0, 0);
             return true;
+        case 's':
+            itsWorld->saveWorld();
+            break;
         case 'q':
             return false;
             break;

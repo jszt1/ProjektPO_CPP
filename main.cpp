@@ -14,12 +14,15 @@ int main(int argc, char *argv[]) {
   else if(argc == 1){
     cr = World::getWorld(20, 20);
   }
+  else if(argc == 2){
+    cr = World::getWorld("gameSaves/save1436004697.txt");
+  }
   
   int i = 0;
   cr->printWorld();
-  do{
+  while(cr->getPlayerInput()){
     cr->doTheTurn();
     cr->printWorld();
-  } while(cr->getPlayerInput());
+  }
   return 0;
 }

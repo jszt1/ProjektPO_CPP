@@ -49,6 +49,8 @@ public:
   bool getPlayerInput();
   void addLog(Organism*, std::string s);
   void addOrganism(Organism*);
+  void findOrganismAndCreate(std::string, int, int);
+  void insertOrganismAtEmptySpace(std::string);
   void killOrg(Organism*);
   bool priority(Organism*, Organism*);
   WINDOW *getGameMap();
@@ -62,6 +64,7 @@ public:
   int getGameSizeY();
   static World* getWorld();
   static World* getWorld(int, int);
+  static World* getWorld(const char*);
   Organism *getOrganismXY(int x, int y);
 
   ~World();

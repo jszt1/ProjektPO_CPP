@@ -12,6 +12,7 @@
 #include "../include/Turtle.h"
 #include "../include/Antelope.h"
 #include "../include/Grass.h"
+#include "../include/Guarana.h"
 #include "../include/Dandelion.h"
 #include "../include/DeadlyNightshade.h"
 #include "../include/SosnowskiHogweed.h"
@@ -22,21 +23,9 @@ using namespace std;
 World::World(int width, int height) {
   x = width;
   y = height;
-  gameTurn = 0;
-  logsPos = 0;
   // new Sheep(10, 10, this);
   // new Sheep(11, 12, this);
-   new Wolf(10, 11, this);
-   new Wolf(12, 12, this);
-   new Wolf(12, 13, this);
-   humanPtr = new Human(x/2, y/2, this);
-   //new DeadlyNightshade(11, 10, this);
-  // // new Fox(14, 11, this);
-  // new Fox(14, 12, this);
-  //new Fox(14, 13, this);
-
-  // new Dandelion(15, 15, this);
-  // new Dandelion(7, 7, this);
+   
   // new Grass(10, 10, this);
   //new SosnowskiHogweed(12, 12, this);
   //new SosnowskiHogweed(14, 14, this);
@@ -47,8 +36,6 @@ World::World(int width, int height) {
   // new Antelope(13, 10, this);
   // new Antelope(11, 10, this);
   // logsPos = 0;
-  playerPos.x = x / 2;
-  playerPos.y = y / 2;
   initscr();
   start_color();
   noecho();
@@ -82,12 +69,106 @@ World* World::getWorld(){
     return world;
 }
 
+void World::insertOrganismAtEmptySpace(string orgName){
+  int xRandPos, yRandPos;
+  xRandPos = rand() % x;
+  yRandPos = rand() % y;
+  while(getOrganismXY(xRandPos, yRandPos)){
+    xRandPos = rand() % x;
+    yRandPos = rand() % y;
+  }
+  this->findOrganismAndCreate(orgName, xRandPos, yRandPos);
+}
+
+
 World* World::getWorld(int width, int height){
   if(world != nullptr){
     delete world;
   }
   world = new World(width, height);
+  world->gameTurn = 0;
+  world->logsPos = 0;
+  int xRandPos, yRandPos;
+  world->insertOrganismAtEmptySpace("Wolf");
+  world->insertOrganismAtEmptySpace("Wolf");
+  world->insertOrganismAtEmptySpace("Wolf");
+  world->insertOrganismAtEmptySpace("Dandelion");
+  world->insertOrganismAtEmptySpace("Dandelion");
+  world->insertOrganismAtEmptySpace("Human");
+  
   return world;
+}
+
+World* World::getWorld(const char* s){
+  if(world != nullptr){
+    delete world;
+  }
+  ifstream in;
+  string temp;
+  int xTemp, yTemp, turn, orgCount;
+  in.open(s);
+
+  getline(in, temp, ' '); // blank
+  getline(in, temp); 
+  turn = stoi(temp);
+
+
+  getline(in, temp, ' '); // blank
+  getline(in, temp, ' '); 
+  xTemp = stoi(temp);
+  getline(in, temp); 
+  yTemp = stoi(temp);
+
+  world = new World(xTemp, yTemp);
+  world->gameTurn = turn;
+  world->logsPos = 0;
+
+  getline(in, temp); 
+  orgCount = stoi(temp);
+  int orgX, orgY;
+  string orgName;
+  for(int i = 0; i < orgCount; i++){
+    getline(in, temp, ' ');
+    orgName = temp;
+    getline(in, temp, ' ');
+    orgX = stoi(temp);
+    getline(in, temp);
+    orgY = stoi(temp);
+    world->findOrganismAndCreate(orgName, orgX, orgY);
+  }
+  in.close();
+  return world;
+}
+
+
+void World::findOrganismAndCreate(string s, int x, int y){
+    if (s == "Antelope") {
+      new Antelope(x, y, this);
+  } else if (s == "Dandelion") {
+      new Dandelion(x, y, world);
+  } else if (s == "DeadlyNightshade") {
+      new DeadlyNightshade(x, y, this);
+  } else if (s == "Fox") {
+      new Fox(x, y, this);
+  } else if (s == "Grass") {
+      new Grass(x, y, this);
+  } else if (s == "Guarana") {
+      new Guarana(x, y, this);
+  } else if (s == "Human") {
+      this->humanPtr = new Human(x, y, this);
+  } else if (s == "Sheep") {
+      new Sheep(x, y, this);
+  } else if (s == "SosnowskiHogweed") {
+      new SosnowskiHogweed(x, y, this);
+  } else if (s == "Turtle") {
+      new Turtle(x, y, this);
+  } else if (s == "Wolf") {
+      new Wolf(x, y, this);
+  }
+  else{
+    return;
+  }
+
 }
 
 void World::saveWorld(){
@@ -95,7 +176,7 @@ void World::saveWorld(){
   ofstream save;
   save.open(name);
   save << "Turn: " << to_string(gameTurn) << "\nWorldSz(x,y): " 
-  + to_string(x) + to_string(y) + "\n";
+  + to_string(x) + " " + to_string(y) + "\n" + to_string(organisms.size()) << "\n";
 
   for(int i =0; i < organisms.size(); i++){
     save << organisms[i]->toString() << "\n";
@@ -103,6 +184,7 @@ void World::saveWorld(){
 
   save.close();
 }
+
 
 void World::clearWindows() {
   logsPos = 0;

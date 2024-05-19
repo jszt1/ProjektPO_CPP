@@ -50,6 +50,8 @@ void Organism::empower(int val){
   power += val;
 }
 
+
+
 bool Organism::canEscape(){
   return false;
 }
